@@ -1,0 +1,48 @@
+Bonus: Real-Time Updates
+Backend WebSocket Implementation:
+
+Use Socket.io on the backend to emit events when the isPublished status is toggled.
+
+const http = require('http');
+const socketIo = require('socket.io');
+const server = http.createServer(app);
+const io = socketIo(server);
+
+app.put('/api/dishes/:id/toggle', async (req, res) => {
+  const dish = await Dish.findByPk(req.params.id);
+  if (dish) {
+    dish.isPublished = !dish.isPublished;
+    await dish.save();
+    res.json(dish);
+    io.emit('dishUpdated', dish);
+  } else {
+    res.status(404).send('Dish not found');
+  }
+});
+
+server.listen(3000, () => {
+  console.log('Server is running on port 3000');
+});
+
+Frontend WebSocket Implementation:
+
+Connect to the Socket.io server and listen for events to update the UI in real time.
+useEffect(() => {
+  const fetchData = async () => {
+    const result = await axios.get('/api/dishes');
+    setDishes(result.data);
+  };
+
+  fetchData();
+
+  const socket = io();
+  socket.on('dishUpdated', (updatedDish) => {
+    setDishes((prevDishes) =>
+      prevDishes.map((dish) =>
+        dish.dishId === updatedDish.dishId ? updatedDish : dish
+      )
+    );
+  });
+
+  return () => socket.disconnect();
+}, []);
