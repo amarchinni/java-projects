@@ -1,0 +1,64 @@
+Step 3: Front-End Dashboard
+Setting Up the Environment:
+
+Use React.js for the front end.
+Use a state management library like Redux for managing state.
+Components:
+
+DishList: Displays the list of dishes.
+DishItem: Displays individual dish information with a toggle button.
+Real-Time Updates:
+
+Use WebSockets (e.g., Socket.io) to implement real-time updates.
+Example Code:
+
+// App.js
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import io from 'socket.io-client';
+
+const App = () => {
+  const [dishes, setDishes] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await axios.get('/api/dishes');
+      setDishes(result.data);
+    };
+
+    fetchData();
+
+    const socket = io();
+    socket.on('dishUpdated', (updatedDish) => {
+      setDishes((prevDishes) =>
+        prevDishes.map((dish) =>
+          dish.dishId === updatedDish.dishId ? updatedDish : dish
+        )
+      );
+    });
+
+    return () => socket.disconnect();
+  }, []);
+
+  const togglePublished = async (dishId) => {
+    await axios.put(`/api/dishes/${dishId}/toggle`);
+  };
+
+  return (
+    <div>
+      {dishes.map((dish) => (
+        <div key={dish.dishId}>
+          <h2>{dish.dishName}</h2>
+          <img src={dish.imageUrl} alt={dish.dishName} />
+          <p>{dish.isPublished ? 'Published' : 'Unpublished'}</p>
+          <button onClick={() => togglePublished(dish.dishId)}>
+            Toggle Publish Status
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export default App;
+
