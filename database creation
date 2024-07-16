@@ -1,0 +1,29 @@
+
+To implement the solution, we'll break down each task and provide example code snippets for each part.
+
+Step 1: Database Creation
+Database Schema Design:
+
+We'll use a relational database like PostgreSQL.
+
+The dishes table will have the following schema:
+
+sql
+Copy code
+CREATE TABLE dishes (
+  dishId SERIAL PRIMARY KEY,
+  dishName VARCHAR(255) NOT NULL,
+  imageUrl VARCHAR(255) NOT NULL,
+  isPublished BOOLEAN NOT NULL DEFAULT TRUE
+);
+
+Populating the Database:
+
+Use the provided JSON data to insert records into the dishes table.
+
+INSERT INTO dishes (dishName, imageUrl, isPublished) VALUES
+('Jeera Rice', 'https://nosh-assignment.s3.ap-south-1.amazonaws.com/jeera-rice.jpg', TRUE),
+('Paneer Tikka', 'https://nosh-assignment.s3.ap-south-1.amazonaws.com/paneer-tikka.jpg', TRUE),
+('Rabdi', 'https://nosh-assignment.s3.ap-south-1.amazonaws.com/rabdi.jpg', TRUE),
+('Chicken Biryani', 'https://nosh-assignment.s3.ap-south-1.amazonaws.com/chicken-biryani.jpg', TRUE),
+('Alfredo Pasta', 'https://nosh-assignment.s3.ap-south-1.amazonaws.com/alfredo-pasta.jpg', TRUE);
